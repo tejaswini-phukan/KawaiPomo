@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🍓 Kawaii Pomodoro Timer</title>
+  <style>
+    /* === CSS (Pastel Kawaii Style) === */
+    body {
+      font-family: 'Comic Neue', cursive;
+      background: #FFF5F5;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 5px 15px rgba(255, 182, 193, 0.3);
+      max-width: 300px;
+      position: relative;
+    }
+    h1 {
+      color: #FF85A2;
+      margin-top: 0;
+    }
+    .timer {
+      font-size: 3rem;
+      color: #FF85A2;
+      margin: 20px 0;
+      font-weight: bold;
+    }
+    button {
+      background: #FFB6C1;
+      border: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      margin: 0 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    button:hover {
+      transform: scale(1.1);
+      background: #FF85A2;
+    }
+    .progress-container {
+      width: 100%;
+      height: 10px;
+      background: #FFE5E5;
+      border-radius: 5px;
+      margin: 20px 0;
+    }
+    .progress-bar {
+      height: 100%;
+      background: #FF85A2;
+      border-radius: 5px;
+      width: 100%;
+      transition: width 0.5s;
+    }
+    .quote {
+      font-size: 0.9rem;
+      color: #FF85A2;
+      margin: 20px 0;
+      min-height: 40px;
+      font-style: italic;
+    }
+    .kawaii-emoji {
+      font-size: 1.5rem;
+      margin: 10px 0;
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .settings {
+      margin-top: 15px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    .settings select, .settings input {
+      border: 2px solid #FFB6C1;
+      border-radius: 15px;
+      padding: 5px 10px;
+      font-family: 'Comic Neue';
+      color: #FF85A2;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🍓Study Time!🍓</h1>
+
+    <div class="timer" id="timer">25:00</div>
+    
+    <div class="progress-container">
+      <div class="progress-bar" id="progress"></div>
+    </div>
+    
+    <div class="buttons">
+      <button id="startBtn">▶️</button>
+      <button id="resetBtn">🔄</button>
+    </div>
+    
+    <div class="quote" id="quote">"You can do it! Stay focused~"</div>
+    
+    <div class="settings">
+      <select id="duration">
+        <option value="25">25 mins</option>
+        <option value="15">15 mins</option>
+        <option value="45">45 mins</option>
+      </select>
+      <select id="theme">
+        <option value="pink">Pink Theme</option>
+        <option value="blue">Blue Theme</option>
+        <option value="purple">Purple Theme</option>
+      </select>
+    </div>
+  </div>
+
+  <script>
+    // === JavaScript (Enhanced Timer) ===
+    const timerDisplay = document.getElementById("timer");
+    const startBtn = document.getElementById("startBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const progressBar = document.getElementById("progress");
+    const quoteElement = document.getElementById("quote");
+    const emojiElement = document.getElementById("emoji");
+    const durationSelect = document.getElementById("duration");
+    const themeSelect = document.getElementById("theme");
+
+    let timeLeft = 25 * 60; // 25 minutes in seconds
+    let totalTime = 25 * 60;
+    let timerInterval;
+    let isRunning = false;
+
+    // Kawaii quotes collection
+    const quotes = [
+      "You can do it! Stay focused",
+      "One step at a time!",
+      "Believe in your kawaii power!",
+      "Study now, relax later~",
+      "You're doing great! ",
+      "Every minute counts!",
+      "Stay determined! ",
+      "The future you will thank you!"
+    ];
+
+    // Kawaii emojis
+    const emojis = ["(◕‿◕✿)", "ヽ(・∀・)ﾉ", "(づ｡◕‿‿◕｡)づ", "♡(˃͈ દ ˂͈ ༶ )", "✿◕ ‿ ◕✿"];
+
+    // Update the timer display (MM:SS)
+    function updateDisplay() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      timerDisplay.textContent = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+      
+      // Update progress bar
+      const progressPercent = (timeLeft / totalTime) * 100;
+      progressBar.style.width = `${progressPercent}%`;
+    }
+
+    // Change quote randomly
+    function changeQuote() {
+      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+      quoteElement.textContent = `"${randomQuote}"`;
+      
+      // Change emoji too
+      const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+      emojiElement.textContent = randomEmoji;
+    }
+
+    // Change theme
+    function changeTheme(theme) {
+      const root = document.documentElement;
+      if (theme === "blue") {
+        document.body.style.background = "#F0F8FF";
+        timerDisplay.style.color = "#6AA6D6";
+        document.querySelectorAll("button").forEach(btn => {
+          btn.style.background = "#A2D2FF";
+          btn.addEventListener("mouseover", () => btn.style.background = "#6AA6D6");
+          btn.addEventListener("mouseout", () => btn.style.background = "#A2D2FF");
+        });
+        progressBar.style.background = "#6AA6D6";
+        quoteElement.style.color = "#6AA6D6";
+      } else if (theme === "purple") {
+        document.body.style.background = "#F5F0FF";
+        timerDisplay.style.color = "#B399D4";
+        document.querySelectorAll("button").forEach(btn => {
+          btn.style.background = "#C9B6E4";
+          btn.addEventListener("mouseover", () => btn.style.background = "#B399D4");
+          btn.addEventListener("mouseout", () => btn.style.background = "#C9B6E4");
+        });
+        progressBar.style.background = "#B399D4";
+        quoteElement.style.color = "#B399D4";
+      } else { // default pink
+        document.body.style.background = "#FFF5F5";
+        timerDisplay.style.color = "#FF85A2";
+        document.querySelectorAll("button").forEach(btn => {
+          btn.style.background = "#FFB6C1";
+          btn.addEventListener("mouseover", () => btn.style.background = "#FF85A2");
+          btn.addEventListener("mouseout", () => btn.style.background = "#FFB6C1");
+        });
+        progressBar.style.background = "#FF85A2";
+        quoteElement.style.color = "#FF85A2";
+      }
+    }
+
+    // Start/Pause toggle
+    startBtn.addEventListener("click", () => {
+      if (!isRunning) {
+        timerInterval = setInterval(() => {
+          timeLeft--;
+          updateDisplay();
+          if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            changeQuote();
+            alert("Time for a break! 🎉");
+          }
+        }, 1000);
+        startBtn.textContent = "⏸️";
+      } else {
+        clearInterval(timerInterval);
+        startBtn.textContent = "▶️";
+      }
+      isRunning = !isRunning;
+    });
+
+    // Reset timer
+    resetBtn.addEventListener("click", () => {
+      clearInterval(timerInterval);
+      timeLeft = totalTime;
+      updateDisplay();
+      startBtn.textContent = "▶️";
+      isRunning = false;
+      changeQuote();
+    });
+
+    // Change duration
+    durationSelect.addEventListener("change", () => {
+      totalTime = parseInt(durationSelect.value) * 60;
+      timeLeft = totalTime;
+      updateDisplay();
+    });
+
+    // Change theme
+    themeSelect.addEventListener("change", () => {
+      changeTheme(themeSelect.value);
+    });
+
+    // Initialize
+    updateDisplay();
+    changeQuote();
+    
+    // Change quote every 30 seconds
+    setInterval(changeQuote, 30000);
+  </script>
+</body>
+</html>
